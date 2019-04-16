@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch
 class LinkTest {
 
     private val testRepo = TestRepo()
+    private val countDownLatch = CountDownLatch(2)
 
     @Rule
     @JvmField
@@ -17,18 +18,22 @@ class LinkTest {
 
     @Test
     fun testLink() {
-        val countDownLatch = CountDownLatch(1)
-        val link = LoginLink(testRepo)
+        val link = LoginLink(testRepo, this::extraWork)
 
         link.value.observeForever {
             assert(it.data == "test")
             countDownLatch.countDown()
         }
         link.update("test", "test")
+
         countDownLatch.await()
     }
 
-    class LoginLink(private val testRepo: TestRepo): Link<String>() {
+    private fun extraWork() {
+        countDownLatch.countDown()
+    }
+
+    class LoginLink(private val testRepo: TestRepo, private val extraWork: () -> Unit): Link<String>() {
         private var userName: String? = null
         private var password: String? = null
 
@@ -38,6 +43,10 @@ class LinkTest {
 
         override fun fetch(): LiveData<Resource<String>> {
             return testRepo.getData(userName, password)
+        }
+
+        override fun extraProcessing() {
+            extraWork()
         }
     }
 

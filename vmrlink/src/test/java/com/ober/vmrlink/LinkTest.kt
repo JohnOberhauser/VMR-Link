@@ -9,6 +9,8 @@ import java.util.concurrent.CountDownLatch
 
 class LinkTest {
 
+    private val testRepo = TestRepo()
+
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -16,19 +18,34 @@ class LinkTest {
     @Test
     fun testLink() {
         val countDownLatch = CountDownLatch(1)
-        val link = object : Link<String>() {
-            override fun fetch(): LiveData<Resource<String>> {
-                val liveData = MutableLiveData<Resource<String>>()
-                liveData.value = Resource.success("test", Source.DATABASE)
-                return liveData
-            }
-        }
+        val link = LoginLink(testRepo)
 
         link.value.observeForever {
             assert(it.data == "test")
             countDownLatch.countDown()
         }
-        link.update()
+        link.update("test", "test")
         countDownLatch.await()
+    }
+
+    class LoginLink(private val testRepo: TestRepo): Link<String>() {
+        private var userName: String? = null
+        private var password: String? = null
+
+        fun update(username: String?, password: String?) {
+            update()
+        }
+
+        override fun fetch(): LiveData<Resource<String>> {
+            return testRepo.getData(userName, password)
+        }
+    }
+
+    class TestRepo {
+        fun getData(username: String?, password: String?): LiveData<Resource<String>> {
+            val liveData = MutableLiveData<Resource<String>>()
+            liveData.value = Resource.success("test", Source.DATABASE)
+            return liveData
+        }
     }
 }

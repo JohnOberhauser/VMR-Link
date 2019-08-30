@@ -1,7 +1,7 @@
-#VMR-Link
+# VMR-Link
 VMR stand for ViewModel-Repository.  This library creates a link between your view model and your repository layers.
 
-##To add to project:
+## To add to project:
 
 ### Using JitPack
 

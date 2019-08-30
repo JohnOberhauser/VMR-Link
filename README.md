@@ -5,7 +5,7 @@ VMR stand for ViewModel-Repository.  This library creates a link between your vi
 
 ### Using JitPack
 
-implementation 'com.github.JohnOberhauser:VMR-Link:0.1.1'
+implementation 'com.github.JohnOberhauser:VMR-Link:0.1.2'
 
 ### Using Maven
 
@@ -15,4 +15,4 @@ repositories {
     }
 }
 
-implementation 'com.ober:vmr-link:0.1.1'
+implementation 'com.ober:vmr-link:0.1.2'

@@ -5,7 +5,7 @@ VMR stand for ViewModel-Repository.  This library creates a link between your vi
 
 VMR-Link was created for two reasons:
 
-1: Reduce boiler plate code for ensuring an update function in your view model is not call again while live data is in a loading state.
+1: Reduce boiler plate code for ensuring an update function in your view model is not call again while live data is in a loading state.  See the `update` function in the `Link.kt` class file to better understand what I mean.
 
 2: Add a wrapper class `Resource` to help you determine the state of your data at the UI layer.
 

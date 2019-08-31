@@ -82,7 +82,7 @@ viewModel.easyLink.update()
 
 ### Link Example
 
-If your repositories function does require parameters, then you should use `Link`
+If your repository's function does require parameters, then you should use `Link`
 
 ```kotlin
 class ComplexLink(private val testRepo: TestRepository) : Link<String, ParamsExample>() {

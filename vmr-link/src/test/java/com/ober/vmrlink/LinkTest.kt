@@ -10,7 +10,7 @@ import java.util.concurrent.CountDownLatch
 class LinkTest {
 
     private val testRepo = TestRepo()
-    private val countDownLatch = CountDownLatch(2)
+    private var countDownLatch = CountDownLatch(2)
 
     @Rule
     @JvmField
@@ -24,7 +24,22 @@ class LinkTest {
             assert(it.data == "test")
             countDownLatch.countDown()
         }
-        link.update("test", "test")
+        link.update(LoginLink.Credentials("test", "test"))
+
+        countDownLatch.await()
+    }
+
+    @Test
+    fun testSimpleLink() {
+        countDownLatch = CountDownLatch(1)
+        val link = EasyLink(testRepo)
+
+        link.value.observeForever {
+            assert(it.data == "test")
+            countDownLatch.countDown()
+        }
+
+        link.update()
 
         countDownLatch.await()
     }
@@ -33,21 +48,23 @@ class LinkTest {
         countDownLatch.countDown()
     }
 
-    class LoginLink(private val testRepo: TestRepo, private val extraWork: () -> Unit): Link<String>() {
-        private var userName: String? = null
-        private var password: String? = null
-
-        fun update(username: String?, password: String?) {
-            update()
-        }
-
+    class EasyLink(private val testRepo: TestRepo) : SimpleLink<String>() {
         override fun fetch(): LiveData<Resource<String>> {
-            return testRepo.getData(userName, password)
+            return testRepo.getData("test", "test")
+        }
+    }
+
+    class LoginLink(private val testRepo: TestRepo, private val extraWork: () -> Unit) : Link<String, LoginLink.Credentials>() {
+
+        override fun fetch(p: Credentials?): LiveData<Resource<String>> {
+            return testRepo.getData(p?.userName, p?.password)
         }
 
         override fun extraProcessing() {
             extraWork()
         }
+
+        class Credentials(var userName: String?, var password: String?)
     }
 
     class TestRepo {

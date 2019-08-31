@@ -38,7 +38,7 @@ class EasyLink(private val testRepo: TestRepository) : SimpleLink<String>() {
 }
 ```
     
-Return live data of type LiveData<Resource<T>> from your repository
+Return live data of type `LiveData<Resource<T>>` from your repository
 
 ```kotlin
 class TestRepository {

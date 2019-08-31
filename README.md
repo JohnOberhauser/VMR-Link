@@ -22,13 +22,13 @@ If your repository layer's function does not require any parameters, you can use
 
 Create your Link class
 
-    ``` kotlin
-    class EasyLink(private val testRepo: TestRepository) : SimpleLink<String>() {
-        override fun fetch(): LiveData<Resource<String>> {
-            return testRepo.getData()
-        }
+``` kotlin
+class EasyLink(private val testRepo: TestRepository) : SimpleLink<String>() {
+    override fun fetch(): LiveData<Resource<String>> {
+        return testRepo.getData()
     }
-    ```
+}
+```
     
 Return live data of type LiveData<Resource<T>> from your repository
 

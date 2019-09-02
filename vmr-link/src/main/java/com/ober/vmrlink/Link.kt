@@ -4,9 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
-abstract class Link<T, in P> {
+abstract class Link<T, in P> : MutableLiveData<Resource<T>>() {
 
-    var value = MutableLiveData<Resource<T>>()
     private var mediator: LiveData<Resource<T>>? = null
 
     fun update(params: P? = null) {
@@ -19,7 +18,7 @@ abstract class Link<T, in P> {
         mediator = fetch(params).apply {
             observeForever(object : Observer<Resource<T>> {
                 override fun onChanged(resource: Resource<T>?) {
-                    this@Link.value.value = resource
+                    this@Link.value = resource
                     extraProcessing()
                     if (resource is Success || resource is Error) {
                         mediator?.removeObserver(this)

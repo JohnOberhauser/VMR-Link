@@ -20,7 +20,7 @@ class LinkTest {
     fun testLink() {
         val link = LoginLink(testRepo, this::extraWork)
 
-        link.value.observeForever {
+        link.observeForever {
             assert(it.data == "test")
             countDownLatch.countDown()
         }
@@ -34,7 +34,7 @@ class LinkTest {
         countDownLatch = CountDownLatch(1)
         val link = EasyLink(testRepo)
 
-        link.value.observeForever {
+        link.observeForever {
             assert(it.data == "test")
             countDownLatch.countDown()
         }

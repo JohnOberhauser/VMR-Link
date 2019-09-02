@@ -19,7 +19,7 @@ Be sure to add the jcenter repository
 
 Then add the library to your dependencies
 
-    implementation 'com.ober:vmr-link:0.1.3'
+    implementation 'com.ober:vmr-link:0.1.5'
     
 
 ## Usage

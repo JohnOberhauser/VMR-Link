@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
-abstract class Link<T, in P> : MutableLiveData<Resource<T>>() {
+abstract class Link<T, in P> : LiveData<Resource<T>>() {
 
     private var mediator: LiveData<Resource<T>>? = null
 

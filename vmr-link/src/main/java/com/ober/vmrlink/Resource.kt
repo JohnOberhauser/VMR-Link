@@ -8,8 +8,8 @@ interface Resource<out T> {
             return Success(data, source)
         }
 
-        fun <T> error(message: String, data: T?): Resource<T> {
-            return Error(data, message)
+        fun <T> error(data: T?, throwable: Throwable): Resource<T> {
+            return Error(data, throwable)
         }
 
         fun <T> loading(data: T?, source: Source): Resource<T> {
@@ -26,7 +26,7 @@ data class Success<out T>(override val data: T?, override val source: Source) : 
 
 data class Loading<out T>(override val data: T?, override val source: Source) : SuccessResource<T>
 
-data class Error<out T>(override val data: T?, val message: String) : Resource<T>
+data class Error<out T>(override val data: T?, val throwable: Throwable) : Resource<T>
 
 enum class Source {
     NETWORK,

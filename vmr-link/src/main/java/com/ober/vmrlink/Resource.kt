@@ -4,15 +4,15 @@ interface Resource<out T> {
     val data: T?
 
     companion object {
-        fun <T> success(data: T?, source: Source): Resource<T> {
+        fun <T> success(data: T?, source: Source = Source.UNSPECIFIED): Resource<T> {
             return Success(data, source)
         }
 
-        fun <T> error(data: T?, throwable: Throwable): Resource<T> {
+        fun <T> error(data: T? = null, throwable: Throwable? = null): Resource<T> {
             return Error(data, throwable)
         }
 
-        fun <T> loading(data: T?, source: Source): Resource<T> {
+        fun <T> loading(data: T?, source: Source = Source.UNSPECIFIED): Resource<T> {
             return Loading(data, source)
         }
     }
@@ -26,10 +26,11 @@ data class Success<out T>(override val data: T?, override val source: Source) : 
 
 data class Loading<out T>(override val data: T?, override val source: Source) : SuccessResource<T>
 
-data class Error<out T>(override val data: T?, val throwable: Throwable) : Resource<T>
+data class Error<out T>(override val data: T?, val throwable: Throwable?) : Resource<T>
 
 enum class Source {
     NETWORK,
     DATABASE,
-    NO_DATA
+    NO_DATA,
+    UNSPECIFIED
 }

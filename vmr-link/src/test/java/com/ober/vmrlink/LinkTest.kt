@@ -37,6 +37,7 @@ class LinkTest {
 
         link.observeForever {
             assert(it.data == "test")
+            assert((it as Success).source == Source.UNSPECIFIED)
             countDownLatch.countDown()
         }
 
@@ -53,7 +54,7 @@ class LinkTest {
         link.observeForever {
             assert(it.data == "test")
             assert(it is Error)
-            assert((it as Error).throwable.message == "message")
+            assert((it as Error).throwable?.message == "message")
             countDownLatch.countDown()
         }
 
@@ -94,7 +95,7 @@ class LinkTest {
     class TestRepo {
         fun getData(username: String?, password: String?): LiveData<Resource<String>> {
             val liveData = MutableLiveData<Resource<String>>()
-            liveData.value = Resource.success("test", Source.DATABASE)
+            liveData.value = Resource.success("test")
             return liveData
         }
     }
@@ -103,6 +104,12 @@ class LinkTest {
         fun getData(username: String?, password: String?): LiveData<Resource<String>> {
             val liveData = MutableLiveData<Resource<String>>()
             liveData.value = Resource.error("test", Throwable("message"))
+            return liveData
+        }
+
+        fun getData2(username: String?, password: String?): LiveData<Resource<String>> {
+            val liveData = MutableLiveData<Resource<String>>()
+            liveData.value = Resource.error()
             return liveData
         }
     }

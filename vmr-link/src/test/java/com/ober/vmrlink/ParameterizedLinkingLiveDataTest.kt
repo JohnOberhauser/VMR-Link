@@ -7,7 +7,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 
-class LinkTest {
+class ParameterizedLinkingLiveDataTest {
 
     private val testRepo = TestRepo()
     private val testErrorRepo = TestErrorRepo()
@@ -19,13 +19,13 @@ class LinkTest {
 
     @Test
     fun testLink() {
-        val link = LoginLink(testRepo, this::extraWork)
+        val link = LoginParameterizedLinkingLiveData(testRepo, this::extraWork)
 
         link.observeForever {
             assert(it.data == "test")
             countDownLatch.countDown()
         }
-        link.update(LoginLink.Credentials("test", "test"))
+        link.update(LoginParameterizedLinkingLiveData.Credentials("test", "test"))
 
         countDownLatch.await()
     }
@@ -33,7 +33,7 @@ class LinkTest {
     @Test
     fun testSimpleLink() {
         countDownLatch = CountDownLatch(1)
-        val link = EasyLink(testRepo)
+        val link = EasyParameterizedLinkingLiveData(testRepo)
 
         link.observeForever {
             assert(it.data == "test")
@@ -49,7 +49,7 @@ class LinkTest {
     @Test
     fun testSimpleLinkError() {
         countDownLatch = CountDownLatch(1)
-        val link = EasyErrorLink(testErrorRepo)
+        val link = EasyErrorParameterizedLinkingLiveData(testErrorRepo)
 
         link.observeForever {
             assert(it.data == "test")
@@ -67,19 +67,19 @@ class LinkTest {
         countDownLatch.countDown()
     }
 
-    class EasyLink(private val testRepo: TestRepo) : SimpleLink<String>() {
+    class EasyParameterizedLinkingLiveData(private val testRepo: TestRepo) : LinkingLiveData<String>() {
         override fun fetch(): LiveData<Resource<String>> {
             return testRepo.getData("test", "test")
         }
     }
 
-    class EasyErrorLink(private val testRepo: TestErrorRepo) : SimpleLink<String>() {
+    class EasyErrorParameterizedLinkingLiveData(private val testRepo: TestErrorRepo) : LinkingLiveData<String>() {
         override fun fetch(): LiveData<Resource<String>> {
             return testRepo.getData("test", "test")
         }
     }
 
-    class LoginLink(private val testRepo: TestRepo, private val extraWork: () -> Unit) : Link<String, LoginLink.Credentials>() {
+    class LoginParameterizedLinkingLiveData(private val testRepo: TestRepo, private val extraWork: () -> Unit) : ParameterizedLinkingLiveData<String, LoginParameterizedLinkingLiveData.Credentials>() {
 
         override fun fetch(p: Credentials?): LiveData<Resource<String>> {
             return testRepo.getData(p?.userName, p?.password)

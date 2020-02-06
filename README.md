@@ -28,10 +28,10 @@ Then add the library to your dependencies
 
 If your repository layer's function does not require any parameters, you can use `SimpleLink`
 
-Create your Link class
+Create your LinkingLiveData class
 
 ``` kotlin
-class EasyLink(private val testRepo: TestRepository) : SimpleLink<String>() {
+class EasyLinkingLiveData(private val testRepo: TestRepository) : LinkLiveData<String>() {
     override fun fetch(): LiveData<Resource<String>> {
         return testRepo.getData()
     }
@@ -57,14 +57,14 @@ class TestRepository {
 Create an instance of your new Link class in your View Model
 
 ```kotlin
-val easyLink = EasyLink(testRepo)
+val easyLinkingLiveData = EasyLinkingLiveData(testRepo)
 ``` 
     
 Observe the link in your UI layer
 
 ```kotlin
 private fun setupObservalbe() {
-    viewModel.easyLink.value.observe(this, Observer { resource ->
+    viewModel.easyLinkingLiveData.value.observe(this, Observer { resource ->
         when (resource) {
             is Success -> showData()
             is Error -> showError()
@@ -77,7 +77,7 @@ private fun setupObservalbe() {
 Call update where you when you want to update the data from your UI
 
 ```kotlin
-viewModel.easyLink.update()
+viewModel.easyLinkingLiveData.update()
 ```
 
 ### Link Example
@@ -85,7 +85,7 @@ viewModel.easyLink.update()
 If your repository's function does require parameters, then you should use `Link`
 
 ```kotlin
-class ComplexLink(private val testRepo: TestRepository) : Link<String, ParamsExample>() {
+class ComplexParameterizedLinkingLiveData(private val testRepo: TestRepository) : ParameterizedLinkingLiveData<String, ParamsExample>() {
     override fun fetch(p: ParamsExample?): LiveData<Resource<String>> {
         return testRepo.getData(p?.foo, p?.bar)
     }
@@ -95,7 +95,7 @@ class ComplexLink(private val testRepo: TestRepository) : Link<String, ParamsExa
 Then, you pass in your parameters when calling update
 
 ```kotlin
-link.update(ParamsExample("foo", "bar"))
+complexParameterizedLinkingLiveData.update(ParamsExample("foo", "bar"))
 ```
   
 ### Extra Processing
@@ -103,7 +103,7 @@ link.update(ParamsExample("foo", "bar"))
 If you need to do extra processing whenever the live data's value is changed, you can override the extraProcessing function
 
 ```kotlin
-class EasyLink(private val testRepo: TestRepo, private val extraWork: () -> Unit) : SimpleLink<String>() {
+class EasyLinkingLiveData(private val testRepo: TestRepo, private val extraWork: () -> Unit) : LinkingLiveData<String>() {
     override fun fetch(): LiveData<Resource<String>> {
         return testRepo.getData()
     }

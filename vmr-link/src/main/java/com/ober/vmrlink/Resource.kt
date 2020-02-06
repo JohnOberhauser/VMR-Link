@@ -4,7 +4,7 @@ interface Resource<out T> {
     val data: T?
 
     companion object {
-        fun <T> success(data: T?, source: Source = Source.UNSPECIFIED): Resource<T> {
+        fun <T> success(data: T? = null, source: Source = Source.UNSPECIFIED): Resource<T> {
             return Success(data, source)
         }
 
@@ -12,7 +12,7 @@ interface Resource<out T> {
             return Error(data, throwable)
         }
 
-        fun <T> loading(data: T?, source: Source = Source.UNSPECIFIED): Resource<T> {
+        fun <T> loading(data: T? = null, source: Source = Source.UNSPECIFIED): Resource<T> {
             return Loading(data, source)
         }
     }

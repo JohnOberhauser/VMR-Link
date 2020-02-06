@@ -1,7 +1,9 @@
 package com.ober.vmrlink
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.ober.vmr_annotation.Link
 
 abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
 
@@ -30,6 +32,12 @@ abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
     protected abstract fun fetch(p: P? = null): LiveData<Resource<T>>
 
     protected open fun extraProcessing() {}
+
+    //TODO remove after testing
+    @Link("TestClass")
+    private fun test(test1: String, test2: Int, test3: String): LiveData<Resource<String>> {
+        return MutableLiveData<Resource<String>>()
+    }
 }
 
 abstract class LinkingLiveData<T> : ParameterizedLinkingLiveData<T, Unit>() {

@@ -8,7 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/vmr-annotation" />
             <option value="$PROJECT_DIR$/vmr-link" />
+            <option value="$PROJECT_DIR$/vmr-processor" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

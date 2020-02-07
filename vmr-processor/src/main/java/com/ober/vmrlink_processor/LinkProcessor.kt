@@ -3,19 +3,22 @@ package com.ober.vmrlink_processor
 import com.google.auto.service.AutoService
 import com.ober.vmr_annotation.Link
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
+import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import java.io.File
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.TypeElement
-import javax.lang.model.element.VariableElement
+import javax.lang.model.element.*
+import javax.lang.model.util.Types
 import javax.tools.Diagnostic
+import kotlin.reflect.jvm.internal.impl.builtins.jvm.JavaToKotlinClassMap
+import kotlin.reflect.jvm.internal.impl.name.FqName
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(LinkProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
 @SupportedAnnotationTypes("com.ober.vmr_annotation.Link")
+@UseExperimental(KotlinPoetMetadataPreview::class)
 class LinkProcessor : AbstractProcessor() {
 
     override fun process(set: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
@@ -55,6 +58,9 @@ class LinkProcessor : AbstractProcessor() {
         file.mkdir()
 
         val parameters = ParameterSpec.parametersOf(method)
+//        method.parameters[0].asType().asTypeName().javaClass.toImmutableKmClass()
+//        String::class.toImmutableKmClass()
+//        method.enclosingElement
 
         var parameterNamesCommaSeparated = ""
         var first = true
@@ -70,10 +76,13 @@ class LinkProcessor : AbstractProcessor() {
             .substringAfterLast(".")
             .substringBefore(">")
 
+        //${method.parameters[0].javaClass.toImmutableKmClass().typeParameters[0].name}
         val updateFunction = FunSpec.builder("update")
             .addParameters(parameters)
             .addCode(
                 """
+                    ${method.parameters[0]}
+                    ${Taco::class.toImmutableKmClass().name}
                        mediator?.let {
                            if (it.hasObservers()) {
                                return
@@ -143,6 +152,58 @@ class LinkProcessor : AbstractProcessor() {
             )
             .build().writeTo(file)
     }
+
+    fun ParameterSpec.Companion.build(method: ExecutableElement, types: Types): ParameterSpec {
+        val enclosingClass = generateSequence<Element>(method) {
+            it.enclosingElement
+        }.first { it is TypeElement } as TypeElement
+
+        val jvmSignature = method
+    }
+//    fun getParameter(element: Element): ParameterSpec {
+//        val name = element.simpleName.toString()
+//        val type = element.asType().asTypeName().javaToKotlin()
+//        return ParameterSpec.builder(name, type)
+//            .jvmModifiers(element.modifiers)
+//            .build()
+//    }
+
+//    private fun TypeName.javaToKotlin(): TypeName {
+//        return when (this) {
+//            is ParameterizedTypeName -> {
+//                (rawType.javaToKotlin() as ClassName).parameterizedBy(
+//                    *typeArguments.map {
+//                        it.javaToKotlin()
+//                    }.toTypedArray()
+//                )
+//            }
+//            is WildcardTypeName -> {
+//                val type =
+//                    if (inTypes.isNotEmpty()) WildcardTypeName.consumerOf(inTypes[0].javaToKotlin())
+//                    else WildcardTypeName.producerOf(outTypes[0].javaToKotlin())
+//                type
+//            }
+//
+//            else -> {
+//                val className = JavaToKotlinClassMap.INSTANCE
+//                    .mapJavaToKotlin(FqName(toString()))?.asSingleFqName()?.asString()
+//                if (className == null) {
+//                    this
+//                } else {
+//                    ClassName.bestGuess(className)
+//                }
+//            }
+//        }
+//    }
+//
+//    private fun Element.javaToKotlinType(): ClassName? {
+//        val className = JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(this.asType().asTypeName().toString()))?.asSingleFqName()?.asString()
+//        return if (className == null) {
+//            null
+//        } else {
+//            ClassName.bestGuess(className)
+//        }
+//    }
 
     companion object {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"

@@ -35,7 +35,7 @@ abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
 
     //TODO remove after testing
     @Link("TestClass")
-    private fun test(test1: String, test2: Int, test3: String): LiveData<Resource<String>> {
+    fun test(test1: String, test2: Int, test3: String): LiveData<Resource<String>> {
         return MutableLiveData<Resource<String>>()
     }
 }

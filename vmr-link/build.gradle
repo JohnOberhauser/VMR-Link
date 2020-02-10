@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 9
-        versionName "2.1"
+        versionCode 10
+        versionName "3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,7 +63,7 @@ ext {
     siteUrl = 'https://github.com/JohnOberhauser/VMR-Link'
     gitUrl = 'https://github.com/JohnOberhauser/VMR-Link.git'
 
-    libraryVersion = '2.1.0'
+    libraryVersion = '3.0.0'
 
     developerId = 'JohnOberhauser'
     developerName = 'John Oberhauser'

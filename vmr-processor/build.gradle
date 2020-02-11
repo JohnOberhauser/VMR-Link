@@ -33,7 +33,7 @@ ext {
     siteUrl = 'https://github.com/JohnOberhauser/VMR-Link'
     gitUrl = 'https://github.com/JohnOberhauser/VMR-Link.git'
 
-    libraryVersion = '3.0.7'
+    libraryVersion = '3.0.10'
 
     developerId = 'JohnOberhauser'
     developerName = 'John Oberhauser'
@@ -76,6 +76,21 @@ install {
             }
         }
     }
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
 
 Properties properties = new Properties()

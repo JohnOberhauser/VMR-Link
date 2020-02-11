@@ -19,6 +19,7 @@ class LinkProcessor : AbstractProcessor() {
 
     override fun process(set: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
         roundEnv?.getElementsAnnotatedWith(Link::class.java)?.forEach { methodElement ->
+
             if (methodElement.kind != ElementKind.METHOD) {
                 processingEnv.messager.printMessage(
                     Diagnostic.Kind.ERROR,
@@ -27,12 +28,10 @@ class LinkProcessor : AbstractProcessor() {
                 return false
             }
 
-            (methodElement as ExecutableElement).parameters.forEach { _ ->
-                generateNewMethod(
-                    methodElement,
-                    processingEnv.elementUtils.getPackageOf(methodElement).toString()
-                )
-            }
+            generateNewMethod(
+                (methodElement as ExecutableElement),
+                processingEnv.elementUtils.getPackageOf(methodElement).toString()
+            )
         }
         return false
     }
@@ -52,9 +51,9 @@ class LinkProcessor : AbstractProcessor() {
         val file = File(generatedSourcesRoot)
         file.mkdir()
 
-        val parameters = ParameterSpec.parametersOf(method)
-
         val transformedParameters = mutableListOf<ParameterSpec>()
+        var parameterNamesCommaSeparated = ""
+        val parameters = ParameterSpec.parametersOf(method)
         parameters.forEach {
             transformedParameters.add(
                 ParameterSpec.builder(it.name, it.type.javaToKotlin())
@@ -62,7 +61,6 @@ class LinkProcessor : AbstractProcessor() {
             )
         }
 
-        var parameterNamesCommaSeparated = ""
         var first = true
         transformedParameters.forEach {
             if (!first) parameterNamesCommaSeparated += ", "
@@ -70,15 +68,24 @@ class LinkProcessor : AbstractProcessor() {
             parameterNamesCommaSeparated += it.name
         }
 
+
         val returnType = method
             .returnType
             .asTypeName()
             .javaToKotlin()
 
+        if (!returnType.toString().contains("LiveData") || !returnType.toString().contains("Resource")) {
+            processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Methods annotated with @Link must return LiveData<Resource<T>>"
+            )
+            return
+        }
+
         val resourceType = returnType
             .toString()
-            .substringAfterLast(".")
-            .substringBefore(">")
+            .substringAfter("<")
+            .substringBeforeLast(">")
 
         val updateFunction = FunSpec.builder("update")
             .addParameters(transformedParameters)
@@ -90,8 +97,8 @@ class LinkProcessor : AbstractProcessor() {
                            }
                        }
                        mediator = repository.${method.simpleName}($parameterNamesCommaSeparated).apply {
-                           observeForever(object : Observer<Resource<$resourceType>> {
-                               override fun onChanged(resource: Resource<$resourceType>?) {
+                           observeForever(object : Observer<$resourceType> {
+                               override fun onChanged(resource: $resourceType?) {
                                    this@$className.value = resource
                                    onValueChanged()
                                    if (resource is Success || resource is Error) {

@@ -3,7 +3,6 @@ package com.ober.vmrlink_processor
 import com.google.auto.service.AutoService
 import com.ober.vmr_annotation.Link
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import java.io.File
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -16,7 +15,6 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(LinkProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
 @SupportedAnnotationTypes("com.ober.vmr_annotation.Link")
-@UseExperimental(KotlinPoetMetadataPreview::class)
 class LinkProcessor : AbstractProcessor() {
 
     override fun process(set: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
@@ -95,7 +93,7 @@ class LinkProcessor : AbstractProcessor() {
                            observeForever(object : Observer<Resource<$resourceType>> {
                                override fun onChanged(resource: Resource<$resourceType>?) {
                                    this@$className.value = resource
-                                   extraProcessing()
+                                   onValueChanged()
                                    if (resource is Success || resource is Error) {
                                        mediator?.removeObserver(this)
                                    }
@@ -106,7 +104,7 @@ class LinkProcessor : AbstractProcessor() {
             )
             .build()
 
-        val extraProcessingFunction = FunSpec.builder("extraProcessing")
+        val onValueChangedFunction = FunSpec.builder("onValueChanged")
             .addModifiers(KModifier.PROTECTED, KModifier.OPEN)
             .build()
 
@@ -134,16 +132,18 @@ class LinkProcessor : AbstractProcessor() {
             .build()
 
         FileSpec.builder(packageOfMethod, className)
+            .addImport("com.ober.vmrlink", "Success")
+            .addImport("com.ober.vmrlink", "Error")
             .addImport("androidx.lifecycle", "Observer")
             .addType(
                 TypeSpec.classBuilder(className)
                     .primaryConstructor(constructor)
                     .addProperty(repositoryProperty)
                     .addProperty(mediatorVariable)
-                    .addModifiers(KModifier.ABSTRACT)
+                    .addModifiers(KModifier.OPEN)
                     .superclass(returnType)
                     .addFunction(updateFunction)
-                    .addFunction(extraProcessingFunction)
+                    .addFunction(onValueChangedFunction)
                     .build()
             )
             .build().writeTo(file)

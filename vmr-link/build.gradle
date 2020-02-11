@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.kezong.fat-aar'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
@@ -11,7 +12,7 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 10
+        versionCode 18
         versionName "3.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,7 +35,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compileOnly project(path: ':vmr-annotation')
+    embed project(path: ':vmr-annotation')
     kapt project(path: ':vmr-processor')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -63,7 +64,7 @@ ext {
     siteUrl = 'https://github.com/JohnOberhauser/VMR-Link'
     gitUrl = 'https://github.com/JohnOberhauser/VMR-Link.git'
 
-    libraryVersion = '3.0.0'
+    libraryVersion = '3.0.8'
 
     developerId = 'JohnOberhauser'
     developerName = 'John Oberhauser'

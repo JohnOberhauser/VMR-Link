@@ -85,7 +85,7 @@ class ParameterizedLinkingLiveDataTest {
             return testRepo.getData(p?.userName, p?.password)
         }
 
-        override fun extraProcessing() {
+        override fun onValueChanged() {
             extraWork()
         }
 

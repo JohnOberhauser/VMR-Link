@@ -18,7 +18,7 @@ abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
             observeForever(object : Observer<Resource<T>> {
                 override fun onChanged(resource: Resource<T>?) {
                     this@ParameterizedLinkingLiveData.value = resource
-                    extraProcessing()
+                    onValueChanged()
                     if (resource is Success || resource is Error) {
                         mediator?.removeObserver(this)
                     }
@@ -29,7 +29,7 @@ abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
 
     protected abstract fun fetch(p: P? = null): LiveData<Resource<T>>
 
-    protected open fun extraProcessing() {}
+    protected open fun onValueChanged() {}
 }
 
 abstract class LinkingLiveData<T> : ParameterizedLinkingLiveData<T, Unit>() {

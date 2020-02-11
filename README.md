@@ -19,7 +19,9 @@ Be sure to add the jcenter repository
 
 Then add the library to your dependencies
 
-    implementation 'com.ober:vmr-link:2.0.0'
+    implementation 'com.ober:vmr-link:3.0.8'
+    kapt 'com.ober:vmr-processor:3.0.7'
+    implementation 'com.squareup:kotlinpoet:1.5.0'
     
 
 ## Usage

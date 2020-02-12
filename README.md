@@ -74,7 +74,7 @@ viewModel.myLinkingLiveData.update()
 If you need to do extra stuff whenever the live data's value is changed in the view model, you can use observeForever
 
 ```kotlin
-val easyLinkingLiveData = MyLinkingLiveData(testRepo).apply {
+val myLinkingLiveData = MyLinkingLiveData(testRepo).apply {
     observeForever {
         when (value) {
             is Success -> {

@@ -5,7 +5,7 @@ VMR stand for ViewModel-Repository.  This library creates a link between your vi
 
 VMR-Link was created for two reasons:
 
-1: Reduce boiler plate code for ensuring an update function in your view model is not call again while live data is in a loading state.  See the `update` function in the `Link.kt` class file to better understand what I mean.
+1: Reduce boiler plate code for ensuring an update function in your view model is not call again while live data is in a loading state.
 
 2: Add a wrapper class `Resource` to help you determine the state of your data at the UI layer.
 
@@ -19,31 +19,20 @@ Be sure to add the jcenter repository
 
 Then add the library to your dependencies
 
-    implementation 'com.ober:vmr-link:3.0.8'
-    kapt 'com.ober:vmr-processor:3.0.7'
-    implementation 'com.squareup:kotlinpoet:1.5.0'
+    implementation 'com.ober:vmr-link:3.0.15'
+    implementation 'com.ober:vmr-annotation:3.0.15'
+    kapt 'com.ober:vmr-processor:3.0.15'
     
 
 ## Usage
 
-### SimpleLink Example
-
-If your repository layer's function does not require any parameters, you can use `SimpleLink`
-
-Create your LinkingLiveData class
-
-``` kotlin
-class EasyLinkingLiveData(private val testRepo: TestRepository) : LinkLiveData<String>() {
-    override fun fetch(): LiveData<Resource<String>> {
-        return testRepo.getData()
-    }
-}
-```
+### Example
     
-Return live data of type `LiveData<Resource<T>>` from your repository
+Return live data of type `LiveData<Resource<T>>` from your repository and use the @Link annotation
 
 ```kotlin
 class TestRepository {
+    @Link("MyLinkingLiveData")
     fun getData(): LiveData<Resource<String>> {
         val liveData = MutableLiveData<Resource<String>>()
         when {
@@ -59,7 +48,7 @@ class TestRepository {
 Create an instance of your new Link class in your View Model
 
 ```kotlin
-val easyLinkingLiveData = EasyLinkingLiveData(testRepo)
+val easyLinkingLiveData = MyLinkingLiveData(testRepo)
 ``` 
     
 Observe the link in your UI layer
@@ -82,36 +71,16 @@ Call update where you when you want to update the data from your UI
 viewModel.easyLinkingLiveData.update()
 ```
 
-### Link Example
-
-If your repository's function does require parameters, then you should use `Link`
+If you need to do extra stuff whenever the live data's value is changed in the view model, you can use observeForever
 
 ```kotlin
-class ComplexParameterizedLinkingLiveData(private val testRepo: TestRepository) : ParameterizedLinkingLiveData<String, ParamsExample>() {
-    override fun fetch(p: ParamsExample?): LiveData<Resource<String>> {
-        return testRepo.getData(p?.foo, p?.bar)
+val easyLinkingLiveData = MyLinkingLiveData(testRepo).apply {
+    observeForever {
+        when (value) {
+            is Success -> {
+                // do stuff
+            }
+        }
     }
 }
-```
-    
-Then, you pass in your parameters when calling update
-
-```kotlin
-complexParameterizedLinkingLiveData.update(ParamsExample("foo", "bar"))
-```
-  
-### Extra Processing
-
-If you need to do extra processing whenever the live data's value is changed, you can override the extraProcessing function
-
-```kotlin
-class EasyLinkingLiveData(private val testRepo: TestRepo, private val extraWork: () -> Unit) : LinkingLiveData<String>() {
-    override fun fetch(): LiveData<Resource<String>> {
-        return testRepo.getData()
-    }
-
-    override fun extraProcessing() {
-        extraWork()
-    }
-}
-```
+``` 

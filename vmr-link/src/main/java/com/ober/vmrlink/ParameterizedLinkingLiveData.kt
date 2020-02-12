@@ -3,6 +3,10 @@ package com.ober.vmrlink
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
+@Deprecated(
+    "Use the @Link annotation on functions in your repository to generate a new LinkingLiveData class instead.  " +
+            "Check https://github.com/JohnOberhauser/VMR-Link for more information."
+)
 abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
 
     private var mediator: LiveData<Resource<T>>? = null
@@ -32,6 +36,10 @@ abstract class ParameterizedLinkingLiveData<T, in P> : LiveData<Resource<T>>() {
     protected open fun onValueChanged() {}
 }
 
+@Deprecated(
+    "Use the @Link annotation on functions in your repository to generate a new LinkingLiveData class instead.  " +
+            "Check https://github.com/JohnOberhauser/VMR-Link for more information."
+)
 abstract class LinkingLiveData<T> : ParameterizedLinkingLiveData<T, Unit>() {
     override fun fetch(p: Unit?): LiveData<Resource<T>> {
         return fetch()

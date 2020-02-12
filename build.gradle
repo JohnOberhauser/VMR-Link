@@ -26,3 +26,26 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    lifecycleVersion = '2.2.0'
+
+
+    bintrayRepo = 'Android-Libs'
+    publishedGroupId = 'com.ober'
+    bintraySubject = 'johnoberhauser'
+
+    libraryDescription = 'A link between your view model and your repository layer'
+
+    siteUrl = 'https://github.com/JohnOberhauser/VMR-Link'
+    gitUrl = 'https://github.com/JohnOberhauser/VMR-Link.git'
+
+    libraryVersion = '3.0.15'
+
+    developerId = 'JohnOberhauser'
+    developerName = 'John Oberhauser'
+
+    licenseName = 'GNU General Public License v3.0'
+    licenseUrl = 'https://raw.githubusercontent.com/JohnOberhauser/VMR-Link/master/LICENSE'
+    allLicenses = ["gpl-3.0"]
+}

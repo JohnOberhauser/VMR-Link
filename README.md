@@ -19,9 +19,9 @@ Be sure to add the jcenter repository
 
 Then add the library to your dependencies
 
-    implementation 'com.ober:vmr-link:3.0.15'
-    implementation 'com.ober:vmr-annotation:3.0.15'
-    kapt 'com.ober:vmr-processor:3.0.15'
+    implementation 'com.ober:vmr-link:3.0.17'
+    implementation 'com.ober:vmr-annotation:3.0.17'
+    kapt 'com.ober:vmr-processor:3.0.17'
     
 
 ## Usage

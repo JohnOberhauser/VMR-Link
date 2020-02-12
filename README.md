@@ -48,14 +48,14 @@ class TestRepository {
 Create an instance of your new Link class in your View Model
 
 ```kotlin
-val easyLinkingLiveData = MyLinkingLiveData(testRepo)
+val myLinkingLiveData = MyLinkingLiveData(testRepo)
 ``` 
     
 Observe the link in your UI layer
 
 ```kotlin
 private fun setupObservalbe() {
-    viewModel.easyLinkingLiveData.value.observe(this, Observer { resource ->
+    viewModel.easyLinkingLiveData.observe(this, Observer { resource ->
         when (resource) {
             is Success -> showData()
             is Error -> showError()
@@ -68,7 +68,7 @@ private fun setupObservalbe() {
 Call update where you when you want to update the data from your UI
 
 ```kotlin
-viewModel.easyLinkingLiveData.update()
+viewModel.myLinkingLiveData.update()
 ```
 
 If you need to do extra stuff whenever the live data's value is changed in the view model, you can use observeForever

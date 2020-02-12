@@ -1,1 +1,1 @@
-include ':vmr-link', ':vmr-processor', ':vmr-annotation'
+include ':vmr-link', ':vmr-processor', ':vmr-annotation', ':vmr-sample'

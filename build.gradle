@@ -12,7 +12,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.kezong:fat-aar:1.2.8'
     }
 }
 
@@ -40,7 +39,7 @@ ext {
     siteUrl = 'https://github.com/JohnOberhauser/VMR-Link'
     gitUrl = 'https://github.com/JohnOberhauser/VMR-Link.git'
 
-    libraryVersion = '3.0.15'
+    libraryVersion = '3.0.16'
 
     developerId = 'JohnOberhauser'
     developerName = 'John Oberhauser'

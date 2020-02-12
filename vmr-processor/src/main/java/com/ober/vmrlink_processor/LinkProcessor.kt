@@ -3,6 +3,7 @@ package com.ober.vmrlink_processor
 import com.google.auto.service.AutoService
 import com.ober.vmr_annotation.Link
 import com.squareup.kotlinpoet.*
+import org.jetbrains.annotations.Nullable
 import java.io.File
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -53,7 +54,7 @@ class LinkProcessor : AbstractProcessor() {
 
         val transformedParameters = mutableListOf<ParameterSpec>()
         var parameterNamesCommaSeparated = ""
-        val parameters = ParameterSpec.parametersOf(method)
+        val parameters = parametersOf(method)
         parameters.forEach {
             transformedParameters.add(
                 ParameterSpec.builder(it.name, it.type.javaToKotlin())
@@ -183,6 +184,26 @@ class LinkProcessor : AbstractProcessor() {
                 }
             }
         }
+    }
+
+    private fun parametersOf(method: ExecutableElement) =
+        method.parameters.map { get(it) }
+
+    private fun get(element: VariableElement): ParameterSpec {
+        var isNullable = false
+
+        element.annotationMirrors.forEach {
+            if (it.annotationType.toString() == Nullable::class.java.name) {
+                isNullable = true
+            }
+        }
+
+        val name = element.simpleName.toString()
+        val type = element.asType().asTypeName().javaToKotlin().copy(nullable = isNullable)
+        val paramSpecBuilder = ParameterSpec.builder(name, type)
+            .jvmModifiers(element.modifiers)
+
+        return paramSpecBuilder.build()
     }
 
     companion object {

@@ -168,10 +168,11 @@ class LinkProcessor : AbstractProcessor() {
                 )
             }
             is WildcardTypeName -> {
-                val type =
-                    if (inTypes.isNotEmpty()) WildcardTypeName.consumerOf(inTypes[0].javaToKotlin())
-                    else WildcardTypeName.producerOf(outTypes[0].javaToKotlin())
-                type
+                if (inTypes.isNotEmpty()) {
+                    WildcardTypeName.consumerOf(inTypes[0].javaToKotlin())
+                } else {
+                    WildcardTypeName.producerOf(outTypes[0].javaToKotlin())
+                }
             }
 
             else -> {
@@ -186,24 +187,66 @@ class LinkProcessor : AbstractProcessor() {
         }
     }
 
+    private fun VariableElement.typeNameJavaToKotlinWithNull(): TypeName {
+        return when (val typeName = this.asType().asTypeName()) {
+            is ParameterizedTypeName -> {
+                ParameterizedTypeNameCreator.buildParameterizedTypeName(
+                    typeName.rawType.javaToKotlin() as ClassName,
+                    typeName.typeArguments.map {
+                        it.javaToKotlin()
+                    }.toList()
+                )
+            }
+            is WildcardTypeName -> {
+                if (typeName.inTypes.isNotEmpty()) {
+                    WildcardTypeName.consumerOf(typeName.inTypes[0].javaToKotlin())
+                } else {
+                    WildcardTypeName.producerOf(typeName.outTypes[0].javaToKotlin())
+                }
+            }
+
+            else -> {
+                val className = JavaToKotlinClassMap.INSTANCE
+                    .mapJavaToKotlin(FqName(typeName.toString()))?.asSingleFqName()?.asString()
+                if (className == null) {
+                    typeName.copy(nullable = isNullable())
+                } else {
+                    ClassName.bestGuess(className).copy(nullable = isNullable())
+                }
+            }
+        }
+    }
+
+    private fun VariableElement.isNullable(): Boolean {
+        this.annotationMirrors.forEach {
+            if (it.annotationType.toString() == Nullable::class.java.name) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun parametersOf(method: ExecutableElement) =
         method.parameters.map { get(it) }
 
     private fun get(element: VariableElement): ParameterSpec {
-        var isNullable = false
-
-        element.annotationMirrors.forEach {
-            if (it.annotationType.toString() == Nullable::class.java.name) {
-                isNullable = true
-            }
-        }
-
         val name = element.simpleName.toString()
-        val type = element.asType().asTypeName().javaToKotlin().copy(nullable = isNullable)
+        val type = element.typeNameJavaToKotlinWithNull()
         val paramSpecBuilder = ParameterSpec.builder(name, type)
             .jvmModifiers(element.modifiers)
 
         return paramSpecBuilder.build()
+    }
+
+    private fun printMessage(string: String?) {
+        processingEnv.messager.printMessage(
+            Diagnostic.Kind.WARNING,
+            "_"
+        )
+        processingEnv.messager.printMessage(
+            Diagnostic.Kind.WARNING,
+            string
+        )
     }
 
     companion object {

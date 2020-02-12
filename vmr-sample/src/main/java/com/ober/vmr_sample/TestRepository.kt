@@ -13,8 +13,9 @@ class TestRepository {
     fun testFunction(
         optionalString: String?,
         string: String,
-        complexType: Map<String?, String>,
-        defaultValueString: String = "test"
+        complexType: Map<String, String>,
+        defaultValueString: String = "test",
+        list: List<String>
     ): LiveData<Resource<String>> {
         return MutableLiveData<Resource<String>>()
     }
